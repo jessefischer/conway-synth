@@ -1,0 +1,22 @@
+.cell {
+  appearance: none;
+  height: 48px;
+  width: 48px;
+  border-radius: 2px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: rgb(20, 20, 20);
+  box-shadow: inset 0px 0px 12px 3px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.75s;
+}
+
+.cell:focus-visible {
+  outline: 2px rgb(255 255 255 / 0.75) solid;
+  outline-offset: 2px;
+}
+
+.active {
+  background-color: rgb(24, 204, 255);
+  transition: background-color 0.125s;
+}
