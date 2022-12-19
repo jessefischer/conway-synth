@@ -52,6 +52,10 @@ export const App = () => {
     );
   };
 
+  const handleClear = () => {
+    setCellStates(Array(height).fill(Array(width).fill(false)));
+  };
+
   const setCellState = (x: number, y: number, state: boolean) => {
     const newCellStates = cellStates.map((row, i) => {
       if (i === y) {
@@ -82,10 +86,11 @@ export const App = () => {
     <div className={styles.app}>
       <Board {...{ height, width, cellStates, setCellState }} />
       <div className={styles.controls}>
-        <button onClick={updateCellStates}>Step</button>
         <button onClick={() => (isPlaying ? handleStop() : handlePlay())}>
           {isPlaying ? "Stop" : "Play"}
         </button>
+        <button onClick={updateCellStates}>Step</button>
+        <button onClick={handleClear}>Clear</button>
       </div>
     </div>
   );
