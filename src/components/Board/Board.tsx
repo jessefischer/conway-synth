@@ -1,5 +1,13 @@
+import { useState } from "react";
+
 import styles from "./Board.module.css";
 import { Cell } from "../Cell";
+
+export enum EDrawingState {
+  None = "none",
+  Drawing = "drawing",
+  Erasing = "erasing",
+}
 
 export type BoardProps = {
   height: number;
@@ -14,6 +22,8 @@ export const Board = ({
   cellStates,
   setCellState,
 }: BoardProps): JSX.Element => {
+  const [drawingState, setDrawingState] = useState(EDrawingState.None);
+
   return (
     <>
       <div
@@ -28,6 +38,7 @@ export const Board = ({
             key={i}
             active={state}
             setActive={(state) => setCellState(i, state)}
+            {...{ drawingState, setDrawingState }}
           />
         ))}
       </div>
