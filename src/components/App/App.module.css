@@ -4,6 +4,29 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
+  gap: 24px;
   align-items: center;
   justify-content: center;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+}
+
+.controls button {
+  border-radius: 25px;
+  padding: 12px 15px;
+  min-width: 5em;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  background-color: rgb(24, 204, 255);
+  box-shadow: inset 0px 0px 12px 2px rgb(0 0 0 / 25%);
+  cursor: pointer;
+  border: none;
+  transition: box-shadow 200ms;
+}
+
+.controls button:hover {
+  box-shadow: inset 0px 0px 24px 2px rgb(0 0 0 / 50%);
 }
