@@ -12,8 +12,8 @@ export enum EDrawingState {
 export type BoardProps = {
   height: number;
   width: number;
-  cellStates: Array<boolean>;
-  setCellState: (i: number, state: boolean) => void;
+  cellStates: Array<Array<boolean>>;
+  setCellState: (x: number, y: number, state: boolean) => void;
 };
 
 export const Board = ({
@@ -33,14 +33,16 @@ export const Board = ({
           gridTemplateRows: `repeat(${height}, 1fr)`,
         }}
       >
-        {cellStates.map((state, i) => (
-          <Cell
-            key={i}
-            active={state}
-            setActive={(state) => setCellState(i, state)}
-            {...{ drawingState, setDrawingState }}
-          />
-        ))}
+        {cellStates.map((rowStates, y) =>
+          rowStates.map((cellState, x) => (
+            <Cell
+              key={`${x},${y}`}
+              active={cellState}
+              setActive={(state) => setCellState(x, y, state)}
+              {...{ drawingState, setDrawingState }}
+            />
+          ))
+        )}
       </div>
     </>
   );

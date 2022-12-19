@@ -10,81 +10,58 @@ import styles from "./App.module.css";
 export const App = () => {
   const [height, width] = [8, 8];
 
-  const [cellStates, setCellStates] = useState(
-    Array(height * width).fill(false)
+  const [cellStates, setCellStates] = useState<Array<Array<boolean>>>(
+    Array(height).fill(Array(width).fill(false))
   );
 
-  const countActiveNeighbors = (i: number) => {
+  const countActiveNeighbors = (x: number, y: number) => {
     let count = 0;
     // Top left neighbor
-    if (i % width > 0 && Math.floor(i / width) > 0) {
-      if (cellStates[i - (width + 1)]) {
-        count++;
-      }
-    }
+    if (cellStates[(y - 1 + height) % height][(x - 1 + width) % width]) count++;
     // Top middle neighbor
-    if (Math.floor(i / width) > 0) {
-      if (cellStates[i - width]) {
-        count++;
-      }
-    }
+    if (cellStates[(y - 1 + height) % height][x]) count++;
     // Top right neighbor
-    if (Math.floor(i / width) > 0 && i % width < width - 1) {
-      if (cellStates[i - (width - 1)]) {
-        count++;
-      }
-    }
+    if (cellStates[(y - 1 + height) % height][(x + 1) % width]) count++;
     // Left center neighbor
-    if (i % width > 0) {
-      if (cellStates[i - 1]) {
-        count++;
-      }
-    }
+    if (cellStates[y][(x - 1 + width) % width]) count++;
     // Right center neighbor
-    if (i % width < width - 1) {
-      if (cellStates[i + 1]) {
-        count++;
-      }
-    }
+    if (cellStates[y][(x + 1) % width]) count++;
     // Bottom left neighbor
-    if (i % width > 0 && Math.floor(i / width) < height - 1) {
-      if (cellStates[i + width - 1]) {
-        count++;
-      }
-    }
-    // Bottom center neighbor
-    if (Math.floor(i / width) < height - 1) {
-      if (cellStates[i + width]) {
-        count++;
-      }
-    }
+    if (cellStates[(y + 1) % height][(x - 1 + width) % width]) count++;
+    // Bottom middle neighbor
+    if (cellStates[(y + 1) % height][x]) count++;
     // Bottom right neighbor
-    if (Math.floor(i / width) < height - 1 && i % width < width - 1) {
-      if (cellStates[i + width + 1]) {
-        count++;
-      }
-    }
+    if (cellStates[(y + 1) % height][(x + 1) % width]) count++;
     return count;
   };
 
   const updateCellStates = () => {
     setCellStates((cellStates) =>
-      cellStates.map((state, i) => {
-        const activeNeighbors = countActiveNeighbors(i);
-        if (activeNeighbors === 3) {
-          return true;
-        }
-        if (activeNeighbors === 2) {
-          return state;
-        }
-        return false;
-      })
+      cellStates.map((rowStates, y) =>
+        rowStates.map((cellState, x) => {
+          const activeNeighbors = countActiveNeighbors(x, y);
+          if (activeNeighbors === 3) {
+            return true;
+          }
+          if (activeNeighbors === 2) {
+            return cellState;
+          }
+          return false;
+        })
+      )
     );
   };
 
-  const setCellState = (i: number, state: boolean) => {
-    const newCellStates = cellStates.slice();
-    newCellStates[i] = state;
+  const setCellState = (x: number, y: number, state: boolean) => {
+    const newCellStates = cellStates.map((row, i) => {
+      if (i === y) {
+        const newRow = row.slice();
+        newRow[x] = state;
+        return newRow;
+      } else {
+        return row;
+      }
+    });
     setCellStates(newCellStates);
   };
 
