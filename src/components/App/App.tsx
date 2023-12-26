@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMachine } from "@xstate/react";
+import * as Tone from "tone";
 
 import { Board } from "../Board";
 
@@ -9,6 +10,11 @@ import styles from "./App.module.css";
 
 export const App = () => {
   const [height, width] = [8, 8];
+  const synthRef = useRef(new Tone.PolySynth(Tone.MonoSynth).toDestination());
+
+  useEffect(() => {
+    synthRef.current.maxPolyphony = height * width;
+  }, []);
 
   const [cellStates, setCellStates] = useState<Array<Array<boolean>>>(
     Array(height).fill(Array(width).fill(false))
@@ -35,6 +41,11 @@ export const App = () => {
     return count;
   };
 
+  const mapCoordsToTone = (x: number, y: number) => {
+    const midi = 32 + y * width + x;
+    return Tone.Frequency(midi, "midi").toNote();
+  };
+
   const updateCellStates = () => {
     setCellStates((cellStates) =>
       cellStates.map((rowStates, y) =>
@@ -50,6 +61,19 @@ export const App = () => {
         })
       )
     );
+  };
+
+  const playBoardTones = () => {
+    let tones = [];
+    for (let y = 0; y < cellStates.length; y++) {
+      for (let x = 0; x < cellStates.length; x++) {
+        if (cellStates[y][x]) {
+          tones.push(mapCoordsToTone(x, y));
+        }
+      }
+    }
+    synthRef.current.triggerAttackRelease(tones, "8n", undefined, 0.25);
+    // console.log( tones);
   };
 
   const handleClear = () => {
@@ -70,7 +94,7 @@ export const App = () => {
   };
 
   const [machine, send] = useMachine(BoardMachine, {
-    actions: { updateCellStates },
+    actions: { updateCellStates, playBoardTones },
   });
   const isPlaying = machine.matches("Playing");
 

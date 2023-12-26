@@ -15,7 +15,7 @@ export const BoardMachine = createMachine({
       after: {
         "500": {
           target: "Playing",
-          actions: ["updateCellStates"],
+          actions: ["updateCellStates", "playBoardTones"],
         },
       },
       on: {
