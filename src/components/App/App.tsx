@@ -16,7 +16,7 @@ const C3 = MIDDLE_C - STEPS_PER_OCTAVE;
 
 export const App = () => {
   const [height, width] = [8, 8];
-  const synthRef = useRef<Tone.PolySynth<Tone.MonoSynth>>();
+  const synthRef = useRef<Tone.PolySynth<Tone.FMSynth>>();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -87,16 +87,18 @@ export const App = () => {
       })
     );
     cellStatesRef.current = newCellStates;
-    console.log("update cell states", {
-      newCellStates,
-    });
     setCellStates(newCellStates);
   };
 
   const initTone = () => {
     setIsInitialized(true);
     Tone.start();
-    synthRef.current = new Tone.PolySynth(Tone.MonoSynth).toDestination();
+    synthRef.current = new Tone.PolySynth(Tone.FMSynth);
+    synthRef.current.set({
+      envelope: { attack: 0.001 },
+      harmonicity: 10,
+    });
+    synthRef.current.connect(new Tone.Reverb().toDestination());
     synthRef.current.maxPolyphony = 2 * height * width;
     Tone.Transport.cancel();
     Tone.Transport.scheduleRepeat((time) => {
@@ -114,14 +116,19 @@ export const App = () => {
         }
       }
     }
-    synthRef.current?.triggerAttackRelease(tones, "16n", time, 0.25);
+    synthRef.current?.triggerAttackRelease(tones, "8n", time, 0.25);
   };
 
   const playBoardTone = (x: number, y: number) => {
     if (!isInitialized) {
       initTone();
     }
-    synthRef.current?.triggerAttackRelease(mapCoordsToTone(x, y), "16n");
+    synthRef.current?.triggerAttackRelease(
+      mapCoordsToTone(x, y),
+      "16n",
+      undefined,
+      0.5
+    );
   };
 
   const handleClear = () => {
