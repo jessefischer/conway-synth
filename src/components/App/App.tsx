@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { uniq } from "lodash";
 
 import * as Tone from "tone";
 
@@ -93,12 +94,15 @@ export const App = () => {
   const initTone = () => {
     setIsInitialized(true);
     Tone.start();
+    Tone.setContext(new Tone.Context({ latencyHint: "playback" }));
     synthRef.current = new Tone.PolySynth(Tone.FMSynth);
     synthRef.current.set({
       envelope: { attack: 0.001 },
       harmonicity: 10,
     });
-    synthRef.current.connect(new Tone.Reverb().toDestination());
+    synthRef.current.connect(
+      new Tone.Reverb({ wet: 0.35, decay: 4 }).toDestination()
+    );
     synthRef.current.maxPolyphony = 2 * height * width;
     Tone.Transport.cancel();
     Tone.Transport.scheduleRepeat((time) => {
@@ -116,7 +120,8 @@ export const App = () => {
         }
       }
     }
-    synthRef.current?.triggerAttackRelease(tones, "8n", time, 0.25);
+    tones = uniq(tones).slice(0, 16);
+    synthRef.current?.triggerAttackRelease(tones, "8n", time, 1 / tones.length);
   };
 
   const playBoardTone = (x: number, y: number) => {
@@ -137,7 +142,7 @@ export const App = () => {
   };
 
   const setCellState = (x: number, y: number, state: boolean) => {
-    if (state) {
+    if (state && !isPlaying) {
       playBoardTone(x, y);
     }
     const newCellStates = cellStatesRef.current.map((row, i) => {
