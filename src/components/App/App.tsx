@@ -173,6 +173,7 @@ export const App = () => {
 
   return (
     <div className={styles.app}>
+      <div className={styles.title}>Life Tunes</div>
       <Board {...{ height, width, cellStates, setCellState }} />
       <div className={styles.controls}>
         <button onClick={() => (isPlaying ? handleStop() : handlePlay())}>
